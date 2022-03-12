@@ -11,12 +11,24 @@ import {
 import { useMediaQuery } from "../hooks";
 import { backend, withAuth } from "../libs";
 import { DateContext } from "../context";
+import { useQuery } from "react-query";
 
-const Home = ({ desks, bookings }: any) => {
+const fetchDesks = async () => {
+  const { data } = await backend.get("/desks");
+  return data;
+};
+const fetchBookings = async () => {
+  const { data } = await backend.get("/bookings");
+  return data;
+};
+
+const Home = () => {
   const isDesktop = useMediaQuery("(min-width: 814px)");
   const { date } = useContext(DateContext);
+  const { data: desks } = useQuery("desks", fetchDesks);
+  const { data: bookings } = useQuery("bookings", fetchBookings);
 
-  if (!desks) {
+  if (!desks || !bookings) {
     return <Backdrop />;
   }
 
