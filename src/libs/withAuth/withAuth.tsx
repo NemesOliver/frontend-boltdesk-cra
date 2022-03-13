@@ -8,8 +8,6 @@ export const withAuth = (Component: FunctionComponent) => {
     const navigate = useNavigate();
     const { isLoggedIn } = useContext(AuthContext);
 
-    console.log(isLoggedIn);
-
     //Check if we are on client
     if (typeof window !== "undefined") {
       // if loading show loader

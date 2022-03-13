@@ -5,11 +5,16 @@ import { AuthContext } from "../context";
 export const LoginPage = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const { login, error } = useContext(AuthContext);
+  const { login, error, isLoading } = useContext(AuthContext);
 
   const handleSubmit = (e: FormEvent) => {
     e.preventDefault();
     login(email, password);
+  };
+
+  const loginAsGuest = (e: FormEvent) => {
+    e.preventDefault();
+    login("guest@gmail.com", "guest123");
   };
 
   return (
@@ -37,7 +42,16 @@ export const LoginPage = () => {
               }
             />
           </div>
-          <Button>log in</Button>
+          <Button className="mb-2" isLoading={isLoading}>
+            log in
+          </Button>
+          <Button
+            onClick={loginAsGuest}
+            className="bg-blue-500"
+            isLoading={isLoading}
+          >
+            Continue as Guest
+          </Button>
         </form>
         <div className="h-[20px] mt-4 text-center text-red-800">{error}</div>
       </section>
