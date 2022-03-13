@@ -9,11 +9,12 @@ export const Modal: FC<any> = () => {
   const { user } = useContext(AuthContext);
   const { date } = useContext(DateContext);
   const navigate = useNavigate();
-  const [cookie] = useCookies(["user"]);
+  const [cookies] = useCookies();
 
   // Isolate me later
+  // Use mutation from useQuery to mark data stale
   const bookDesk = async () => {
-    const userRef = cookie;
+    const userRef = cookies.user;
 
     try {
       await backend.post("/bookings/create", {

@@ -1,4 +1,5 @@
-import { useContext } from "react";
+import { useContext, FC } from "react";
+import { useQuery } from "react-query";
 import {
   Container,
   Desk,
@@ -7,26 +8,21 @@ import {
   DatePicker,
   Chart,
   Backdrop,
-} from "../components";
-import { useMediaQuery } from "../hooks";
-import { backend, withAuth } from "../libs";
-import { DateContext } from "../context";
-import { useQuery } from "react-query";
+} from "../../components";
+import { useMediaQuery } from "../../hooks";
+import { fetchBookings, fetchDesks } from "./libs";
+import { withAuth } from "../../libs";
+import { DateContext } from "../../context";
 
-const fetchDesks = async () => {
-  const { data } = await backend.get("/desks");
-  return data;
-};
-const fetchBookings = async () => {
-  const { data } = await backend.get("/bookings");
-  return data;
-};
-
-const Home = () => {
+const Home: FC = () => {
   const isDesktop = useMediaQuery("(min-width: 814px)");
   const { date } = useContext(DateContext);
-  const { data: desks } = useQuery("desks", fetchDesks);
+  const { data: desks, isError } = useQuery("desks", fetchDesks);
   const { data: bookings } = useQuery("bookings", fetchBookings);
+
+  if (isError) {
+    return <div>Oops! Could not fetch data</div>;
+  }
 
   if (!desks || !bookings) {
     return <Backdrop />;
@@ -57,6 +53,7 @@ const Home = () => {
 
           {/* Render desks */}
           {desks.map((desk: any) => {
+            //filter booking by current date
             const filteredBookings = bookings.filter(
               (booking: any) => booking.date === date
             );
@@ -94,22 +91,4 @@ const Home = () => {
   );
 };
 
-export const HomePage = withAuth(Home) as any;
-
-// export const getServerSideProps: GetServerSideProps = async ({ req, res }) => {
-//   const token: any = getCookie("jwt", { req, res });
-
-//   try {
-//     const { data: desks } = await backend.get("/desks", {
-//       headers: { Authorization: token }, // Must be set in header due to how SSR works or useSWR can be used instead
-//     });
-
-//     const { data: bookings } = await backend.get("/bookings", {
-//       headers: { Authorization: token }, // Must be set in header due to how SSR works or useSWR can be used instead
-//     });
-
-//     return { props: { desks, bookings } };
-//   } catch (error) {
-//     return { props: {} };
-//   }
-// };
+export const HomePage = withAuth(Home) as FC;
