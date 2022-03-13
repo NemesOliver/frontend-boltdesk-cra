@@ -1,5 +1,6 @@
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import { QueryClientProvider, QueryClient } from "react-query";
+import { ReactQueryDevtools } from "react-query/devtools";
 import { CookiesProvider } from "react-cookie";
 import { Layout } from "../components";
 import { HomePage, LoginPage } from "../pages";
@@ -23,12 +24,13 @@ export const App = () => {
                   <Layout>
                     <Routes>
                       <Route path="/" element={<HomePage />} />
-                      <Route path="/login" element={<LoginPage />} /> 
+                      <Route path="/login" element={<LoginPage />} />
                     </Routes>
                   </Layout>
                 </ModalContextProvider>
               </DateContextProvider>
             </AuthContextProvider>
+            <ReactQueryDevtools />
           </QueryClientProvider>
         </CookiesProvider>
       </Router>

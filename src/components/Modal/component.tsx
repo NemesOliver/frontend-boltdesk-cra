@@ -1,19 +1,23 @@
-import { FC, useContext } from "react";
-import { useNavigate } from "react-router-dom";
+import { FC, useContext, MouseEventHandler } from "react";
 import { useCookies } from "react-cookie";
+import { useMutation, useQueryClient } from "react-query";
 import { AuthContext, DateContext, ModalContext } from "../../context";
 import { backend } from "../../libs";
 
-export const Modal: FC<any> = () => {
+export const Modal: FC = () => {
   const { open, onClose, message, desk } = useContext(ModalContext);
   const { user } = useContext(AuthContext);
   const { date } = useContext(DateContext);
-  const navigate = useNavigate();
   const [cookies] = useCookies();
+  const queryClient = useQueryClient();
+  const mutation = useMutation(bookDesk, {
+    onSuccess: () => {
+      queryClient.invalidateQueries("desks");
+      queryClient.invalidateQueries("bookings");
+    },
+  });
 
-  // Isolate me later
-  // Use mutation from useQuery to mark data stale
-  const bookDesk = async () => {
+  async function bookDesk() {
     const userRef = cookies.user;
 
     try {
@@ -24,11 +28,10 @@ export const Modal: FC<any> = () => {
         deskRef: desk,
       });
       onClose();
-      navigate("/");
     } catch (e) {
       console.warn(e);
     }
-  };
+  }
 
   return (
     <>
@@ -45,7 +48,11 @@ export const Modal: FC<any> = () => {
             <p className="my-4 text-[16px]">{message}</p>
             <div className="float-right">
               <button
-                onClick={bookDesk}
+                onClick={() => {
+                  mutation.mutate() as
+                    | MouseEventHandler<HTMLButtonElement>
+                    | undefined;
+                }}
                 className="mr-6 bg-green-700 rounded-sm py-1 px-3 text-[14px] text-white hover:bg-green-500 active:scale-95 transition-all duration-200"
               >
                 Confirm
