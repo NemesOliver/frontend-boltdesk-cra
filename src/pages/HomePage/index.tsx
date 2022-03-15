@@ -1,5 +1,6 @@
 import { useContext, FC } from "react";
 import { useQuery } from "react-query";
+import { useCookies } from "react-cookie";
 import {
   Container,
   Desk,
@@ -15,10 +16,13 @@ import { withAuth } from "../../libs";
 import { DateContext } from "../../context";
 
 const Home: FC = () => {
+  const [cookie] = useCookies();
   const isDesktop = useMediaQuery("(min-width: 814px)");
   const { date } = useContext(DateContext);
-  const { data: desks, isError } = useQuery("desks", fetchDesks);
-  const { data: bookings } = useQuery("bookings", fetchBookings);
+
+  const token = `Bearer ${cookie.jwt}`;
+  const { data: desks, isError } = useQuery("desks", () => fetchDesks(token));
+  const { data: bookings } = useQuery("bookings", () => fetchBookings(token));
 
   if (isError) {
     return <div>Oops! Could not fetch data</div>;

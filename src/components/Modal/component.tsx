@@ -8,7 +8,7 @@ export const Modal: FC = () => {
   const { open, onClose, message, desk } = useContext(ModalContext);
   const { user } = useContext(AuthContext);
   const { date } = useContext(DateContext);
-  const [cookies] = useCookies();
+  const [cookie] = useCookies();
   const queryClient = useQueryClient();
   const mutation = useMutation(bookDesk, {
     onSuccess: () => {
@@ -18,15 +18,24 @@ export const Modal: FC = () => {
   });
 
   async function bookDesk() {
-    const userRef = cookies.user;
+    const userRef = cookie.user;
+    const token = `Bearer ${cookie.jwt}`;
 
     try {
-      await backend.post("/bookings/create", {
-        date,
-        booked_by: user.name,
-        userRef,
-        deskRef: desk,
-      });
+      await backend.post(
+        "/bookings/create",
+        {
+          date,
+          booked_by: user.name,
+          userRef,
+          deskRef: desk,
+        },
+        {
+          headers: {
+            Authorization: token,
+          },
+        }
+      );
       onClose();
     } catch (e) {
       console.warn(e);
