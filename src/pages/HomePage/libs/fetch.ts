@@ -8,6 +8,7 @@ export const fetchDesks = async (token: string) => {
   });
   return data;
 };
+
 export const fetchBookings = async (token: string) => {
   const { data } = await backend.get("/bookings", {
     headers: {
