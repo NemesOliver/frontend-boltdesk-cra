@@ -59,7 +59,7 @@ export const Modal: FC = () => {
         >
           <div
             onClick={(e) => e.stopPropagation()} // Stop event bubbling
-            className="bg-background  mx-auto px-8 py-4 rounded-sm shadow-xl"
+            className="bg-background mx-auto px-8 py-4 rounded-sm shadow-xl"
           >
             <div className="flex items-center">
               <h2 className="text-[24px] flex-1">Confirm booking</h2>
@@ -68,6 +68,7 @@ export const Modal: FC = () => {
             <p className="my-4 text-[16px]">{message}</p>
             <div className="float-right">
               <button
+                disabled={loading}
                 onClick={() => {
                   mutation.mutate() as
                     | MouseEventHandler<HTMLButtonElement>
